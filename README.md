@@ -1,6 +1,6 @@
 # blazor-filemanager-pass-jwt-token
 
-This repository contains the Blazor FileManager component with HttpClient to get data from server in the Blazor File Manager component.
+This repository contains the Blazor FileManager component to send JWT token from client to server in the File Manager component.
 
 ## How to run this application?
 
@@ -39,14 +39,14 @@ dotnet run
 
 ## File Manager authorization header for read and upload operation
 
-To send the authorization header data from client side to server side using the FileManager [`Onsend`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.FileManager.FileManagerEvents-1.html?_ga=2.138704048.2095323515.1658726624-1114855823.1658293399#Syncfusion_Blazor_FileManager_FileManagerEvents_1_OnSend) event. To send the header data to server side just map the following code snippet in the `Index.razor` page and `FileManagerController.cs` page property of File Manager.
+To send the authorization header data from client side to server side use the FileManager [`Onsend`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.FileManager.FileManagerEvents-1.html?_ga=2.138704048.2095323515.1658726624-1114855823.1658293399#Syncfusion_Blazor_FileManager_FileManagerEvents_1_OnSend) event. 
 
-Refer the code snippet of `Index.razor` page
+Refer to the code snippet of `Index.razor` page
 
 ```
-  <SfFileManager TValue="FileManagerDirectoryContent">
+<SfFileManager TValue="FileManagerDirectoryContent">
 ...
-    <FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
+<FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
 </SfFileManager>
 @code{
     void onsend(BeforeSendEventArgs args)
@@ -60,20 +60,20 @@ Refer the code snippet of `Index.razor` page
 }
 ```
 
-Refer the code snippet of `FileManagerController.cs` page
+Refer to the code snippet of `FileManagerController.cs` page
 
 ```
-  public object FileOperations([FromBody] FileManagerDirectoryContent args)
-    {
-        var root = HttpContext.Request.Headers["Authorization"];
-            ...
-    }
-        ...
-  public IActionResult Upload(string path, IList<IFormFile> uploadFiles, string action, string data)
-    {
-        var root = HttpContext.Request.Headers["Authorization"].ToString().Split(',')[0];
-        ...
-    }
+public object FileOperations([FromBody] FileManagerDirectoryContent args)
+{
+    var root = HttpContext.Request.Headers["Authorization"];
+    ...
+}
+...
+public IActionResult Upload(string path, IList<IFormFile> uploadFiles, string action, string data)
+{
+    var root = HttpContext.Request.Headers["Authorization"].ToString().Split(',')[0];
+    ...
+}
 ```
 
 ## File Manager authorization header for Download operation
@@ -81,13 +81,13 @@ Refer the code snippet of `FileManagerController.cs` page
 Since there is no direct way to pass custom value, you can prevent our default download operation by setting `args.Cancel` as true in [`BeforeDownload`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.FileManager.FileManagerEvents-1.html#Syncfusion_Blazor_FileManager_FileManagerEvents_1_BeforeDownload)
 event. Then you can trigger the customized download operation using an interop call where you can pass custom values to server side. Check out the below code snippet.
 
-Refer the code snippet of `Index.razor` page
+Refer to the code snippet of `Index.razor` page
 
 ```
 @inject IJSRuntime jsRuntime
-  <SfFileManager TValue="FileManagerDirectoryContent">
+<SfFileManager TValue="FileManagerDirectoryContent">
 ...
-    <FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
+<FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
 </SfFileManager>
 @code{
 public async Task beforeDownload(BeforeDownloadEventArgs<FileManagerDirectoryContent> args)
@@ -113,51 +113,61 @@ public async Task beforeDownload(BeforeDownloadEventArgs<FileManagerDirectoryCon
 }
 ```
 
-Refer the code snippet of `_Host.cshtml` page
+Refer to the code snippet of `_Host.cshtml` page
 
 ```
 <script>  
-        window.saveFile = (data, downloadUrl) => {  
-            //creating the data to call download web API method 
-            var i = {
-                action: "download", 
-                path: data.path,  
-                names: data.names, 
-                data: data.data, 
-                customvalue: "Pictures",  
-            }   
-            …  
+    window.saveFile = (data, downloadUrl) => {  
+        //creating the data to call download web API method 
+        var i = {
+            action: "download", 
+            ath: data.path,  
+            names: data.names, 
+            data: data.data, 
+            customvalue: "Pictures",  
+        }   
+... 
 //appeding the dynamically created form to the document and perform form submit to perform download operation   
-            a.appendChild(s),  
-                document.body.appendChild(a),
-                document.forms.namedItem("downloadForm").submit(), 
-                document.body.removeChild(a) 
+    a.appendChild(s),  
+        document.body.appendChild(a),
+            document.forms.namedItem("downloadForm").submit(), 
+            document.body.removeChild(a) 
         } 
 </script>
 ```
 
-## File Manager authorization header for GetImage operation
-
-We are unable to add the custom header in GetImage request since the GetImage is processed using query string parameter and download processed using form element.
-
-If we are going to use ajax (asynchronous request) then, each image creates individual request and its having certain time delay based on image size, network bandwidth and server respond time. We are unable to update the headers to the corresponding image tag value. So, it is not possible to implement these operations using Ajax requests. However, you can pass the custom data in the imageUrl, but this is not preferable for sensitive data sending.
-
-Refer the code snippet of `Index.razor` page
+Refer to the code snippet of `FileManagerController.cs` page
 
 ```
-  <SfFileManager TValue="FileManagerDirectoryContent">
+[Route("Download")]   
+public IActionResult Download(string downloadInput)   
+{   
+    FileManagerDirectoryContentExtend args = JsonConvert.DeserializeObject<FileManagerDirectoryContentExtend>(downloadInput);   
+    var root = args.customvalue;   
+    this.operation.RootFolder(this.basePath + "\\" + this.root + "\\" + root);
 ...
-    <FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
+```
+
+## File Manager authorization header for GetImage operation
+
+There is no direct support to pass header in GetImage operation. However, you can pass the custom data in the imageUrl, but this is not preferable for sensitive data sending.
+
+Refer to the code snippet of `Index.razor` page
+
+```
+<SfFileManager TValue="FileManagerDirectoryContent">
+...
+<FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
 </SfFileManager>
 @code{
-        public void beforeImageLoad(BeforeImageLoadEventArgs<FileManagerDirectoryContent> args)
+    public void beforeImageLoad(BeforeImageLoadEventArgs<FileManagerDirectoryContent> args)
     {
         args.ImageUrl = args.ImageUrl + "&SubFolder=Pictures";
     }
 }
 ```
 
-Refer the code snippet of `FileManagerController.cs` page
+Refer to the code snippet of `FileManagerController.cs` page
 
 ```
 public class FileManagerDirectoryContentExtend : FileManagerDirectoryContent    
@@ -166,13 +176,6 @@ public class FileManagerDirectoryContentExtend : FileManagerDirectoryContent
     public string SubFolder { get; set; }
 }    
 ...
-[Route("Download")]   
-public IActionResult Download(string downloadInput)   
-{   
-            FileManagerDirectoryContentExtend args = JsonConvert.DeserializeObject<FileManagerDirectoryContentExtend>(downloadInput);   
-            var root = args.customvalue;   
-              this.operation.RootFolder(this.basePath + "\\" + this.root + "\\" + root);
-…
 [Route("GetImage")]
 public IActionResult GetImage(FileManagerDirectoryContentExtend args)
 {
