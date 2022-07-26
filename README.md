@@ -130,9 +130,9 @@ Refer to the code snippet of `_Host.cshtml` page
 //appeding the dynamically created form to the document and perform form submit to perform download operation   
     a.appendChild(s),  
         document.body.appendChild(a),
-            document.forms.namedItem("downloadForm").submit(), 
-            document.body.removeChild(a) 
-        } 
+        document.forms.namedItem("downloadForm").submit(), 
+        document.body.removeChild(a) 
+    } 
 </script>
 ```
 
