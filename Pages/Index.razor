@@ -1,0 +1,69 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.FileManager;
+@inject IJSRuntime jsRuntime
+
+<SfFileManager TValue="FileManagerDirectoryContent">
+    <FileManagerAjaxSettings Url="/api/FileManager/FileOperations"
+                             GetImageUrl="/api/FileManager/GetImage"
+                             UploadUrl="/api/FileManager/Upload"
+                             DownloadUrl="/api/FileManager/Download">
+    </FileManagerAjaxSettings>
+    <FileManagerEvents TValue="FileManagerDirectoryContent" OnSend="onsend" BeforeDownload="beforeDownload" BeforeImageLoad="beforeImageLoad"></FileManagerEvents>
+</SfFileManager>
+@code{
+    public string DownloadUrl { get; set; }
+    public bool isRead = true;
+    public class DirectoryContent
+    {
+        public DirectoryContent[] Data { get; set; }
+        public string FilterPath { get; set; }
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public bool IsFile { get; set; }
+        public bool HasChild { get; set; }
+        public long Size { get; set; }
+        public string Name { get; set; }
+        public string[] Names { get; set; }
+        public string Action { get; set; }
+        public string Path { get; set; }
+    }
+    public async Task beforeDownload(BeforeDownloadEventArgs<FileManagerDirectoryContent> args)
+    {
+        args.Cancel = true;
+        DirectoryContent[] data = new DirectoryContent[]{ new DirectoryContent()
+        {
+            Name = args.Data.DownloadFileDetails[0].Name, // name of the file
+            IsFile = args.Data.DownloadFileDetails[0].IsFile, // indicates whether file or folder
+            FilterPath = args.Data.DownloadFileDetails[0].FilterPath, // path of the file/folder from root directory
+            HasChild = args.Data.DownloadFileDetails[0].HasChild, // if folder has child folder set as true else false
+            Type = args.Data.DownloadFileDetails[0].Type // empty string for folder and file type like .png for files
+
+        } };
+        DownloadUrl = "https://localhost:44369/api/FileManager/Download";
+        DirectoryContent downloadData = new DirectoryContent()
+        {
+            Data = data,
+            Path = args.Data.Path,// path in which the file is located (make ensure to add the path from root directory excluding the root directory name)
+            Names = args.Data.Names// names of the files to be downloaded in the specified path
+        };
+        await jsRuntime.InvokeAsync<object>("saveFile", downloadData, DownloadUrl);
+    }
+    void onsend(BeforeSendEventArgs args)
+    {
+        if (isRead && args.Action=="read")
+        {
+            args.HttpClientInstance.DefaultRequestHeaders.Add("Authorization", "Documents");
+            isRead = false;
+        }
+    }
+    public void beforeImageLoad(BeforeImageLoadEventArgs<FileManagerDirectoryContent> args)
+    {
+        args.ImageUrl = args.ImageUrl + "&SubFolder=Documents";
+    }
+}
+<style>
+    .sf-license-warning {
+        display: none;
+    }
+</style>

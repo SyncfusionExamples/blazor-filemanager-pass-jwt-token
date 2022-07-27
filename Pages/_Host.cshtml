@@ -1,0 +1,76 @@
+﻿@page "/"
+@namespace BlazorApp1.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href=https://cdn.syncfusion.com/blazor/20.2.39/styles/bootstrap5.css rel="stylesheet" />
+    <script src=https://cdn.syncfusion.com/blazor/20.2.39/syncfusion-blazor.min.js type="text/javascript"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js" type="text/javascript"></script>
+    <script src="https://github.com/Daddoon/Blazor.Polyfill/releases/download/3.0.1/blazor.polyfill.min.js"></script>
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script>
+        window.saveFile = (data, downloadUrl) => {
+            //creating the data to call download web API method
+            var i = {
+                action: "download",
+                path: data.path,
+                names: data.names,
+                data: data.data,
+                customvalue: "Documents",
+            }
+                , a = ej.base.createElement("form", {
+                    id: "sample_downloadForm",
+                    attrs: {
+                        action: downloadUrl,
+                        method: "post",
+                        name: "downloadForm",
+                        download: ""
+                    }
+                })
+                , s = ej.base.createElement("input", {
+                    id: "sample_hiddenForm",
+                    attrs: {
+                        name: "downloadInput",
+                        value: JSON.stringify(i),
+                        type: "hidden"
+                    }
+                });
+            //appeding the dynamically created form to the document and perform form sumbit to perform download operation
+            a.appendChild(s),
+                document.body.appendChild(a),
+                document.forms.namedItem("downloadForm").submit(),
+                document.body.removeChild(a)
+        }
+    </script>
+
+    <script src="_framework/blazor.server.js"></script>
+</body>
+</html>
