@@ -2,40 +2,16 @@
 
 This repository contains the Blazor FileManager component to send JWT token from client to server in the File Manager component.
 
-## How to run this application?
+## Prerequisites
 
-To run this application, you need to first clone the [`blazor-filemanager-pass-jwt-token`](https://github.com/SyncfusionExamples/blazor-filemanager-pass-jwt-token) repository and then navigate to its appropriate path where it has been located in your system.
+* Visual Studio 2022
 
-To do so, open the command prompt and run the below commands one after the other.
+## How to run the project
 
-```
-git clone https://github.com/SyncfusionExamples/blazor-filemanager-pass-jwt-token 
-
-cd blazor-filemanager-pass-jwt-token
-
-```
-
-## Restore the NuGet package and build the application
-
-To restore the NuGet package, run the following command in root folder of the application.
-
-```
-dotnet restore
-```
-
-To build the application, run the following command.
-
-```
-dotnet build
-```
-
-## Running application
-
-After successful compilation, run the following command to run the application.
-
-```
-dotnet run
-```
+* Checkout this project to a location in your disk.
+* Open the solution file using the Visual Studio 2022.
+* Restore the NuGet packages by rebuilding the solution.
+* Run the project.
 
 ## File Manager authorization header for read and upload operation
 
