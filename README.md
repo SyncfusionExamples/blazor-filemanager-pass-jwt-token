@@ -1,7 +1,7 @@
 # Blazor-filemanager-pass-jwt-token
 
 **Repository Description**  
-This repository contains a **Blazor File Manager** sample that demonstrates how to **send a JWT token (authorization header)** from the client side to the server when performing File Manager operations using the **Blazor File Manager** component.
+This repository contains a **Blazor File Manager** sample that demonstrates how to **send a JWT token (authorization header)** from the client side to the server when performing File Manager operations using the [Blazor File Manager](https://www.syncfusion.com/blazor-components/blazor-file-manager) component.
 
 The sample explains how authorization data can be passed for **read**, **upload**, **download**, and **image preview** operations using Blazor events and custom server‑side handling.
 
