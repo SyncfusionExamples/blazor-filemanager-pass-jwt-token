@@ -6,34 +6,57 @@ This repository contains a **Blazor File Manager** sample that demonstrates how 
 The sample explains how authorization data can be passed for **read**, **upload**, **download**, and **image preview** operations using Blazor events and custom server‑side handling.
 
 ## Project Overview
+
 The purpose of this project is to help developers understand how to secure File Manager operations in a Blazor application by attaching custom authorization values (such as JWT tokens) to requests sent from the client to the server.
 
 It shows how different File Manager events can be leveraged to inject authorization headers or custom parameters for various file operations.
 
-## Features
-- Integration of **Blazor File Manager**
-- Pass JWT or custom authorization headers from client to server
-- Handle authorization for **read**, **upload**, **download**, and **image preview** operations
-- Use File Manager events such as `OnSend`, `BeforeDownload`, and `BeforeImageLoad`
-- Secure server‑side request handling in ASP.NET Core controllers
+## Key Features
+
+- Uses `SfFileManager` to display and manage files and folders.
+- Uses `FileManagerEvents<FileManagerDirectoryContent>` to intercept requests.
+- Implements the `OnSend` event to add authorization data through `args.HttpClientInstance.DefaultRequestHeaders`.
+- Uses `BeforeDownload` to cancel the default download behavior with `args.Cancel = true` and trigger a custom download flow through JavaScript interop.
+- Uses `BeforeImageLoad` to append custom values to `args.ImageUrl`.
+- Reads authorization values from `HttpContext.Request.Headers["Authorization"]` in controller actions.
+- Uses `PhysicalFileProvider` from `Syncfusion.EJ2.FileManager.PhysicalFileProvider` to perform file operations.
 
 ## Prerequisites
+
 Ensure the following requirements are met before running this project:
-- Visual Studio 2022  
-- .NET SDK compatible with Blazor  
-- Basic knowledge of Blazor and ASP.NET Core  
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [Visual Studio Code](https://code.visualstudio.com/)
+- [.NET SDK](https://dotnet.microsoft.com/en-us/download/dotnet) compatible with the project's target framework
+- ASP.NET Core Blazor Server support
 - Syncfusion Blazor components installed
 
-## Installation and Running the Project
+## How to Run the Project
 
-* Checkout this project to a location in your disk.
-* Open the solution file using the Visual Studio 2022.
-* Restore the NuGet packages by rebuilding the solution.
-* Run the project.
+**Visual Studio 2022**
+
+1. Clone or download the repository.
+2. Open `JwtTokenSample/TwtTokenSample.sln`.
+3. Restore NuGet packages.
+4. Build the solution.
+5. Ensure the `TwtTokenSample` project is the startup project.
+6. Run the application using `Ctrl+F5`.
+
+**Visual Studio Code**
+
+1. Open the repository folder.
+2. Navigate to the project directory.
+
+```bash
+cd JwtTokenSample
+dotnet restore
+dotnet run
+```
+
+3. Open the URL displayed in the terminal after the application starts.
 
 ## Usage
 
 ### File Manager authorization header for read and upload operation
+
 To send the authorization header data from client side to server side use the FileManager [`Onsend`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.FileManager.FileManagerEvents-1.html?_ga=2.138704048.2095323515.1658726624-1114855823.1658293399#Syncfusion_Blazor_FileManager_FileManagerEvents_1_OnSend) event. 
 
 Refer to the code snippet of `Index.razor` page
@@ -68,6 +91,7 @@ public IActionResult Upload(string path, IList<IFormFile> uploadFiles, string ac
 }
 ```
 ### File Manager authorization header for Download operation
+
 Since there is no direct way to pass custom value, you can prevent our default download operation by setting `args.Cancel` as true in [`BeforeDownload`](https://help.syncfusion.com/cr/blazor/Syncfusion.Blazor.FileManager.FileManagerEvents-1.html#Syncfusion_Blazor_FileManager_FileManagerEvents_1_BeforeDownload)
 event. Then you can trigger the customized download operation using an interop call where you can pass custom values to server side. Check out the below code snippet.
 
@@ -134,6 +158,7 @@ public IActionResult Download(string downloadInput)
 ...
 ```
 ### File Manager authorization header for GetImage operation
+
 There is no direct support to pass header in GetImage operation. However, you can pass the custom data in the imageUrl, but this is not preferable for sensitive data sending.
 
 Refer to the code snippet of `Index.razor` page
@@ -167,28 +192,28 @@ public IActionResult GetImage(FileManagerDirectoryContentExtend args)
 ```
 
 ## Configuration
+
 Authorization handling is configured using:
 - Blazor File Manager events on the client
 - Custom ASP.NET Core controller methods on the server
 - Optional JavaScript interop for download operations
 
-## Documentation
-- General Syncfusion documentation:
-https://help.syncfusion.com/
-- Blazor Introduction:
-https://blazor.syncfusion.com/documentation/introduction
-- Blazor File Manager – Getting Started:
-https://blazor.syncfusion.com/documentation/file-manager/getting-started-with-web-app
+## Project Structure
 
-## Additional Resources
-- Blazor File Manager product overview:
-https://www.syncfusion.com/blazor-components/blazor-file-manager
+`JwtTokenSample/Pages/Index.razor` - Main sample page hosting the Syncfusion Blazor File Manager component. Configures `FileManagerAjaxSettings` and handles the `OnSend`, `BeforeDownload`, and `BeforeImageLoad` events to transmit authorization data during read, upload, download, and image retrieval operations.
 
-## Troubleshooting
-- Ensure the OnSend event is triggered for read and upload operations.
-- Verify JavaScript interop is correctly registered for custom downloads.
-- Validate server‑side controller methods receive expected parameters.
-- Rebuild and restart the application after configuration changes.
+`JwtTokenSample/Controllers/FileManagerController.cs` - Server-side File Manager controller implementing `FileOperations`, `Upload`, `Download`, and `GetImage` endpoints. Reads authorization values from request headers and custom parameters, configures the `PhysicalFileProvider` root folder dynamically, and performs CRUD file system operations.
 
-## Support
-For detailed API references, security customization guidance, and advanced Blazor File Manager scenarios, refer to the Syncfusion Blazor documentation links above.
+`JwtTokenSample/wwwroot/Files/` - Physical file storage location used by the `PhysicalFileProvider`. Subfolders are dynamically selected based on authorization values received from the client.
+
+`JwtTokenSample/wwwroot/` - Static web assets, scripts, and resources used by the Blazor application and custom File Manager download functionality.
+
+## Support and Feedback
+
+- For general product questions, visit the [Syncfusion Community Forum](https://www.syncfusion.com/forums) or [Syncfusion Support](https://www.syncfusion.com/support).
+- To report an issue specific to this sample, open a GitHub issue in this repository.
+- Refer to the Syncfusion File Manager documentation: https://help.syncfusion.com/file-manager-sdk/blazor/overview
+
+## License
+
+This is a Syncfusion sample project provided to demonstrate product usage. Review the [Syncfusion license terms](https://www.syncfusion.com/sales/pricing?category=ui-components) before using Syncfusion components in your own applications.
